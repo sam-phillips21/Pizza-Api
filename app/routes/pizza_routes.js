@@ -27,6 +27,27 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
+router.get('/pizzas', requireToken, (req, res, next) => {
+	Pizza.find()
+		.then(pizzas => {
+			return pizzas.map(pizza => pizza)
+		})
+		.then(pizzas =>{
+			res.status(200).json({ pizzas: pizzas })
+		})
+		.catch(next)
+})
+//show 
+
+router.get('/pizzas/:id', requireToken, (req, res, next) => {
+    Pizza.findById(req.params.id)
+    .then(handle404)
+    .then(pizza => {
+        res.status(200).json({ pizza: pizza })
+    })
+    .catch(next)
+
+})
 // Create
 // /pizza
 router.post('/pizzas', requireToken, (req, res, next) => {
@@ -41,6 +62,33 @@ router.post('/pizzas', requireToken, (req, res, next) => {
     .catch(next)
     // .catch(error => next(error))
 
+})
+
+router.patch('/pizzas/:id', requireToken, removeBlanks, (req, res, next) => {
+    delete req.body.pizza.owner
+
+    Pizza.findById(req.params.id)
+    .then(handle404)
+    .then(pizza => {
+        requireOwnership(req, pizza)
+
+        return pizza.updateOne(req.body.pizza)
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
+})
+
+router.delete('/pizzas/:id', requireToken, (req, res, next) => {
+	Pizza.findById(req.params.id)
+		.then(handle404)
+		.then((pizza) => {
+			requireOwnership(req, pizza)
+			pizza.deleteOne()
+		})
+		
+		.then(() => res.sendStatus(204))
+		
+		.catch(next)
 })
 
 
