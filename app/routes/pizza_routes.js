@@ -27,8 +27,9 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-router.get('/pizzas', requireToken, (req, res, next) => {
+router.get('/pizzas',  (req, res, next) => {
 	Pizza.find()
+        .populate('owner')
 		.then(pizzas => {
 			return pizzas.map(pizza => pizza)
 		})
@@ -39,8 +40,9 @@ router.get('/pizzas', requireToken, (req, res, next) => {
 })
 //show 
 
-router.get('/pizzas/:id', requireToken, (req, res, next) => {
+router.get('/pizzas/:id',  (req, res, next) => {
     Pizza.findById(req.params.id)
+    .populate('owner')
     .then(handle404)
     .then(pizza => {
         res.status(200).json({ pizza: pizza })
