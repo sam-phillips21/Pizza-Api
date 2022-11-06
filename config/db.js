@@ -18,6 +18,6 @@ const localDb = process.env.TESTENV ? database.test : database.development
 // heroku production evironment otherwise use test or development db
 const currentDb = process.env.MONGODB_URI || localDb
 
-// mongodb+srv://pizza:<password>@cluster1.xtdhh95.mongodb.net/?retryWrites=true&w=majority
+// mongodb+srv://pizza:pizzaguy@cluster1.xtdhh95.mongodb.net/pizzaapi?retryWrites=true&w=majority
 
 module.exports = currentDb
